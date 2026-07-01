@@ -13,6 +13,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -36,6 +37,7 @@ import org.springframework.security.oauth2.server.authorization.settings.ClientS
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -59,6 +61,13 @@ public class SecurityConfig {
                 .with(authorizationServerConfigurer,
                         authorizationServer ->
                                 authorizationServer.oidc(Customizer.withDefaults()));
+        http    // Redirect to login page when not authenticated from the auth endpoint
+                .exceptionHandling((exceptions) -> exceptions
+                        .authenticationEntryPoint(
+                                new LoginUrlAuthenticationEntryPoint("/login")
+                        ))
+                // Accept access tokens for User Info or/and  Client Registration
+                .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()));
 
         return http.build();
     }
@@ -88,6 +97,7 @@ public class SecurityConfig {
         return new InMemoryUserDetailsManager(user);
     }
 
+    // Client App
     @Bean
     RegisteredClientRepository registeredClientRepository() {
 
