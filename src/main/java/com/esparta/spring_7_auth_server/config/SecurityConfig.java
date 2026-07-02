@@ -103,6 +103,7 @@ public class SecurityConfig {
 
         RegisteredClient client =
                 RegisteredClient.withId(UUID.randomUUID().toString())
+
                         .clientId("oidc-client")
                         .clientSecret("{noop}secret")
                         .clientAuthenticationMethod(
@@ -111,10 +112,14 @@ public class SecurityConfig {
                                 AuthorizationGrantType.AUTHORIZATION_CODE)
                         .authorizationGrantType(
                                 AuthorizationGrantType.REFRESH_TOKEN)
+                        .authorizationGrantType(
+                                AuthorizationGrantType.CLIENT_CREDENTIALS)
                         .redirectUri(
                                 "http://127.0.0.1:8080/login/oauth2/code/oidc-client")
                         .scope(OidcScopes.OPENID)
                         .scope(OidcScopes.PROFILE)
+                        .scope("message.read")
+                        .scope("message.write")
                         .clientSettings(
                                 ClientSettings.builder()
                                         .requireAuthorizationConsent(true)
